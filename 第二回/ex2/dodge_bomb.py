@@ -20,7 +20,7 @@ def check_bound(rct: pg.Rect) -> tuple[bool, bool]:
     if rct.top < 0 or rct.bottom > HEIGHT:
         tate = False
     return yoko,tate
- 
+
 def gameover(screen: pg.Surface) -> None:
     """ゲームオーバー画面を表示する"""
     black_surf = pg.Surface((WIDTH, HEIGHT))
@@ -41,6 +41,19 @@ def gameover(screen: pg.Surface) -> None:
 
     pg.time.wait(5000)
 
+def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
+    """爆弾の拡大画像リストと加速度リストを返す"""
+    bb_imgs = []
+    bb_accs = [a for a in range(1, 11)]
+
+    for r in range(1, 11):
+        bb_img = pg.Surface((20*r, 20*r))
+        bb_img.set_colorkey((0, 0, 0))
+        pg.draw.circle(bb_img, (255, 0, 0), (10*r, 10*r), 10*r)
+        bb_imgs.append(bb_img)
+
+    return bb_imgs, bb_accs
+
 
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
@@ -49,6 +62,7 @@ def main():
     kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
     kk_rct = kk_img.get_rect()
     kk_rct.center = 300, 200
+    bb_imgs, bb_accs = init_bb_imgs()
 
     kk_imgs = {
     (0, -5): pg.transform.rotozoom(pg.image.load("fig/3.png"), 90, 0.9),
@@ -86,12 +100,28 @@ def main():
                 sum_mv[1] += mv[1]
 
         kk_rct.move_ip(sum_mv)
-        if sum_mv != [0, 0]:
+        if sum_mv != [0, 0] and tuple(sum_mv) in kk_imgs:
             kk_img = kk_imgs[tuple(sum_mv)]
+
+        
         old_rct = kk_rct.copy()
         if not all(check_bound(kk_rct)):
             kk_rct = old_rct  
-        bb_rct.move_ip(vx, vy)
+        
+        # 爆弾の拡大・加速
+        idx = min(tmr // 500, 9)
+        bb_img = bb_imgs[idx]
+        avx = vx * bb_accs[idx]
+        avy = vy * bb_accs[idx]
+
+            # Rect のサイズ更新
+        bb_rct.width = bb_img.get_rect().width
+        bb_rct.height = bb_img.get_rect().height
+
+            # 移動
+        bb_rct.move_ip(avx, avy)
+
+
         yoko, tate = check_bound(bb_rct)
         if not yoko:
             vx *= -1
