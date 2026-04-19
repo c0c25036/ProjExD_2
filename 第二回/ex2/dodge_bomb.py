@@ -66,6 +66,8 @@ def main():
             vx *= -1
         if not tate:
             vy *= -1
+        if kk_rct.colliderect(bb_rct):
+            return
         screen.blit(kk_img, kk_rct)
         screen.blit(bb_img, bb_rct)
         pg.display.update()
