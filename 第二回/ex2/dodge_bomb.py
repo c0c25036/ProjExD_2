@@ -28,6 +28,14 @@ def main():
     kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
     kk_rct = kk_img.get_rect()
     kk_rct.center = 300, 200
+
+    kk_imgs = {
+    (0, -5): pg.transform.rotozoom(pg.image.load("fig/3.png"), 90, 0.9),
+    (0, +5): pg.transform.rotozoom(pg.image.load("fig/3.png"), -90, 0.9),
+    (-5, 0): pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9),
+    (+5, 0): pg.transform.rotozoom(pg.image.load("fig/3.png"), 180, 0.9),
+}
+
     bb_img = pg.Surface((20, 20))
     bb_img.set_colorkey((0, 0, 0))
     pg.draw.circle(bb_img, (255, 0, 0), (10, 10), 10)
@@ -57,6 +65,8 @@ def main():
                 sum_mv[1] += mv[1]
 
         kk_rct.move_ip(sum_mv)
+        if sum_mv != [0, 0]:
+            kk_img = kk_imgs[tuple(sum_mv)]
         old_rct = kk_rct.copy()
         if not all(check_bound(kk_rct)):
             kk_rct = old_rct  
