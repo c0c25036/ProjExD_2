@@ -114,11 +114,11 @@ def main():
         avx = vx * bb_accs[idx]
         avy = vy * bb_accs[idx]
 
-            # Rect のサイズ更新
+        # Rect のサイズ更新
         bb_rct.width = bb_img.get_rect().width
         bb_rct.height = bb_img.get_rect().height
 
-            # 移動
+        # 移動
         bb_rct.move_ip(avx, avy)
 
 
