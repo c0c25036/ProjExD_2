@@ -197,20 +197,10 @@ def main():
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
 
-        if beam is not None:
-            beam.update(screen)
-
-        # --- ビームと爆弾の衝突判定 ---
-        if bomb is not None:
-            if beam is not None:
-                if beam.rct.colliderect(bomb.rct):
-                    beam = None
-                    bomb = None
-
         # --- こうかとんと爆弾の衝突判定 ---
         if bomb is not None:
             if bird.rct.colliderect(bomb.rct):
-                return 
+                return
         # --- 爆弾の update ---
         if bomb is not None:
             bomb.update(screen)
@@ -219,10 +209,16 @@ def main():
         if beam is not None:
             beam.update(screen)
 
-        bomb.update(screen)
-        pg.display.update()
-        clock.tick(50)/Users/shweyeemn/Documents/2年生/講義/前期/ProjExD/第三回/ex3/fight_kokaton.py
+    
+        # --- 練習3：ビームが爆弾に当たったときの処理 ---
+        if beam is not None and bomb is not None:
+            if beam.rct.colliderect(bomb.rct):
+                bird.change_img(6, screen)
+                bomb = None
+                beam = None
 
+        pg.display.update()
+        clock.tick(50)
 
 
 
