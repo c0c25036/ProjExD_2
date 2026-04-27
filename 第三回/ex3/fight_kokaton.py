@@ -200,9 +200,29 @@ def main():
         if beam is not None:
             beam.update(screen)
 
+        # --- ビームと爆弾の衝突判定 ---
+        if bomb is not None:
+            if beam is not None:
+                if beam.rct.colliderect(bomb.rct):
+                    beam = None
+                    bomb = None
+
+        # --- こうかとんと爆弾の衝突判定 ---
+        if bomb is not None:
+            if bird.rct.colliderect(bomb.rct):
+                return 
+        # --- 爆弾の update ---
+        if bomb is not None:
+            bomb.update(screen)
+
+        # --- ビームの update ---
+        if beam is not None:
+            beam.update(screen)
+
         bomb.update(screen)
         pg.display.update()
-        clock.tick(50)
+        clock.tick(50)/Users/shweyeemn/Documents/2年生/講義/前期/ProjExD/第三回/ex3/fight_kokaton.py
+
 
 
 
