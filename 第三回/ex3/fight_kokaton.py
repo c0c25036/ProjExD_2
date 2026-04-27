@@ -190,7 +190,7 @@ def main():
     bird = Bird((300, 200))
     score = Score()
     bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)]
-    beam = None  # ゲーム初期化時にはビームは存在しない
+    beams = []  # ゲーム初期化時にはビームは存在しない
     clock = pg.time.Clock()
     tmr = 0
 
@@ -199,7 +199,7 @@ def main():
             if event.type == pg.QUIT:
                 return
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-                beam = Beam(bird)
+                beams.append(Beam(bird))
 
         screen.blit(bg_img, [0, 0])
 
@@ -207,11 +207,6 @@ def main():
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
-
-        # --- こうかとんと爆弾の衝突判定 ---
-        #if bomb is not None:
-            #if bird.rct.colliderect(bomb.rct):
-                #return
 
         # --- こうかとんと爆弾の衝突判定（複数対応） ---
         for bomb in bombs:
@@ -223,31 +218,32 @@ def main():
                 time.sleep(2)
                 return
 
+        
+        
+        # --- 練習3：ビームが爆弾に当たったときの処理 ---
+        for bi, beam in enumerate(beams):
+            for bo, bomb in enumerate(bombs):
+                 if beam.rct.colliderect(bomb.rct):
+                    bird.change_img(6, screen)
+                    bombs[bo] = None
+                    beams[bi] = None
+                    score.value += 1   # スコア機能がある場合
+                    break
+        bombs = [b for b in bombs if b is not None]
+        beams = [b for b in beams if b is not None]
         # --- 爆弾の update ---
         for bomb in bombs:
             bomb.update(screen)
 
 
         # --- ビームの update ---
-        if beam is not None:
+        for beam in beams:
             beam.update(screen)
-
-    
-        # --- 練習3：ビームが爆弾に当たったときの処理 ---
-        if beam is not None:
-            for i, bomb in enumerate(bombs):
-                if beam.rct.colliderect(bomb.rct):
-                    bird.change_img(6, screen)
-                    bombs[i] = None
-                    beam = None
-                    score.value += 1
-                    break
+            
         bombs = [b for b in bombs if b is not None]
         score.update(screen)
         pg.display.update()
         clock.tick(50)
-
-
 
 
 if __name__ == "__main__":
