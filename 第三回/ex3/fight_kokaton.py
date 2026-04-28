@@ -179,6 +179,8 @@ class Score:
     def update(self, screen: pg.Surface):
         self.img = self.fonto.render(f"Score: {self.value}", True, self.color)
         screen.blit(self.img, self.rct)
+
+# 追加機能3：爆発エフェクト（採点用）
 class Explosion:
     def __init__(self, center: tuple[int, int]):
         # 爆発画像（元画像）
