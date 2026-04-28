@@ -233,7 +233,6 @@ def main():
                 beams.append(Beam(bird))
 
         screen.blit(bg_img, [0, 0])
-
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
 
