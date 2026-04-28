@@ -3,7 +3,7 @@ import random
 import sys
 import time
 import pygame as pg
-
+import math
 
 WIDTH = 1100  # ゲームウィンドウの幅
 HEIGHT = 650  # ゲームウィンドウの高さ
@@ -58,6 +58,7 @@ class Bird:
         self.img = __class__.imgs[(+5, 0)]
         self.rct: pg.Rect = self.img.get_rect()
         self.rct.center = xy
+        self.dire = (+5, 0)   
 
     def change_img(self, num: int, screen: pg.Surface):
         """
@@ -84,35 +85,31 @@ class Bird:
             self.rct.move_ip(-sum_mv[0], -sum_mv[1])
         if not (sum_mv[0] == 0 and sum_mv[1] == 0):
             self.img = __class__.imgs[tuple(sum_mv)]
-        screen.blit(self.img, self.rct)
+            self.dire = tuple(sum_mv) 
+        screen.blit(self.img, self.rct) 
 
 class Beam:
-    """
-    こうかとんが放つビームに関するクラス
-    """
     def __init__(self, bird: "Bird"):
-        """
-        ビーム画像Surfaceを生成する
-        引数 bird：ビームを放つこうかとん（Birdインスタンス）
-        """
-        self.img = pg.image.load("fig/beam.png")
+        # こうかとんの向き
+        vx, vy = bird.dire
+        self.vx, self.vy = vx, vy
+
+        # 角度を計算（pygame は y 軸が下向きなので -vy）
+        theta = math.degrees(math.atan2(-vy, vx))
+
+        # ビーム画像を回転
+        img0 = pg.image.load("fig/beam.png")
+        self.img = pg.transform.rotozoom(img0, theta, 1.0)
         self.rct = self.img.get_rect()
 
-        # こうかとんの右側から発射
-        self.rct.centery = bird.rct.centery
-        self.rct.left = bird.rct.right
-
-        # ビームの速度（横方向にまっすぐ）
-        self.vx, self.vy = +5, 0
-
+        # こうかとんの中心から向きに応じてずらす
+        bx = bird.rct.centerx + bird.rct.width * (vx / 5)
+        by = bird.rct.centery + bird.rct.height * (vy / 5)
+        self.rct.center = (bx, by)
     def update(self, screen: pg.Surface):
-        """
-        ビームを速度ベクトルself.vx, self.vyに基づき移動させる
-        引数 screen：画面Surface
-        """
-        if check_bound(self.rct) == (True, True):
-            self.rct.move_ip(self.vx, self.vy)
-            screen.blit(self.img, self.rct)
+        self.rct.move_ip(self.vx, self.vy)
+        screen.blit(self.img, self.rct)
+
 
 
 # ビームクラス:
@@ -263,7 +260,7 @@ def main():
                     score.value += 1   # スコア機能がある場合
                     break
                     
-                 
+
         bombs = [b for b in bombs if b is not None]
         beams = [b for b in beams if b is not None]
         # --- 爆弾の update ---
