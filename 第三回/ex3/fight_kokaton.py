@@ -30,7 +30,7 @@ class Bird:
     """
     ゲームキャラクター（こうかとん）に関するクラス
     """
-    delta = {  # 押下キーと移動量の辞書
+    delta = {  # 押下キーと移動量の辞書 
         pg.K_UP: (0, -5),
         pg.K_DOWN: (0, +5),
         pg.K_LEFT: (-5, 0),
@@ -108,7 +108,12 @@ class Beam:
         self.rct.center = (bx, by)
     def update(self, screen: pg.Surface):
         self.rct.move_ip(self.vx, self.vy)
+
+        if check_bound(self.rct) != (True, True):
+            return False
+
         screen.blit(self.img, self.rct)
+        return True
 
 
 
@@ -269,8 +274,12 @@ def main():
         for bomb in bombs:
             bomb.update(screen)
         # --- ビームの update ---
+        new_beams = []
         for beam in beams:
-            beam.update(screen)
+            if beam.update(screen):   # True → 画面内、False → 画面外
+                new_beams.append(beam)
+        beams = new_beams
+
 
         # --- Explosion update ---
         for ex in explosions:
